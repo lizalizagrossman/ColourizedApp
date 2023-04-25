@@ -12,26 +12,25 @@ struct ColorSettingsView: View {
     @Binding var greenValue: Double
     @Binding var blueValue: Double
     
+    @FocusState var isInputActive: Bool
+    
     var body: some View {
         VStack(spacing: 30) {
-            ColorConfigurationView(value: $redValue, color: .red)
-            ColorConfigurationView(value: $greenValue, color: .green)
-            ColorConfigurationView(value: $blueValue, color: .blue)
+            ColorConfigurationView(value: $redValue, isInputActive: _isInputActive, color: .red)
+            ColorConfigurationView(value: $greenValue, isInputActive: _isInputActive,  color: .green)
+            ColorConfigurationView(value: $blueValue, isInputActive: _isInputActive, color: .blue)
         }
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
                 Button("Done") {
+                    isInputActive = false
                 }
             }
         }
+        
     }
 }
-//struct ColorSettingsView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ColorSettingsView(redValue: red, greenValue: 250, blueValue: 250)
-//   }
-//}
 
 struct TextFieldView: View {
     @Binding var enteredValue: String
@@ -43,7 +42,7 @@ struct TextFieldView: View {
                 "\(lround(value))",
                 text: $enteredValue,
                 onEditingChanged: { _ in
-                    value = Double(enteredValue) ?? value
+                    checkValue()
                 }
         )
             .textFieldStyle(.roundedBorder)
@@ -51,6 +50,15 @@ struct TextFieldView: View {
             .focused($isInputActive)
             .padding(EdgeInsets(top: 2, leading: 3, bottom: 2, trailing: 3))
             .frame(width: 70, height: 30)
+    }
+    
+    private func checkValue() {
+        let enteredNumber = Double(enteredValue) ?? 0
+        if enteredNumber >= 1 && enteredNumber <= 255 {
+            value = Double(enteredValue) ?? value
+        } else {
+            enteredValue = "255"
+        }
     }
         
 }
@@ -68,8 +76,7 @@ struct ColorConfigurationView: View {
             Text("\(lround(value))")
                 .foregroundColor(.white)
     
-            
-            ColorSliderView(value: $value, enteredValue: enteredValue, color: color)
+            ColorSliderView(value: $value, enteredValue: $enteredValue, color: color)
             
             TextFieldView(enteredValue: $enteredValue, value: $value, isInputActive: _isInputActive)
             
@@ -80,7 +87,7 @@ struct ColorConfigurationView: View {
 
 struct ColorSliderView: View {
     @Binding var value: Double
-    @State var enteredValue: String
+    @Binding var enteredValue: String
     
     let color: Color
     
@@ -96,3 +103,6 @@ struct ColorSliderView: View {
         .tint(color)
     }
 }
+
+
+

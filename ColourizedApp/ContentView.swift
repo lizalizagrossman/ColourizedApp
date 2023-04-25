@@ -22,12 +22,17 @@ struct ContentView: View {
                 ColorView(redValue: redSliderValue, greenValue: greenSliderValue, blueValue: blueSliderValue)
                 ColorSettingsView(redValue: $redSliderValue, greenValue: $greenSliderValue, blueValue: $blueSliderValue)
                 
-                Text("\(redSliderValue)")
                 Spacer()
             }
             .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
         }
+        .onTapGesture {
+                    self.endEditing()
+                }
     }
+    private func endEditing() {
+            UIApplication.shared.endEditing()
+        }
 }
 
 struct ContentView_Previews: PreviewProvider {
@@ -36,6 +41,11 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
+extension UIApplication {
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
 
     
 
